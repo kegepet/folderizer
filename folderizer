@@ -1,0 +1,21 @@
+#!/bin/sh
+
+while read t; do
+
+    fn=$(echo "$t" | sed -E 's/^((.+))\.[^.\/]+$/\1/g')
+
+    mkdir $fn 2> /dev/null
+
+    # in case of naming conflict and the folder could not be created
+    if test $? -ne 0; then
+        fn=${fn}' (COPY)'
+        mkdir "$fn"
+    fi
+
+    mv "$t" "$fn"
+
+done << EOF
+    $(find $1 -maxdepth 1 -type f)
+EOF
+
+exit 0
