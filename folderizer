@@ -4,12 +4,14 @@ while read t; do
 
     fn=$(echo "$t" | sed -E 's/^((.+))\.[^.\/]+$/\1/g')
 
-    mkdir $fn 2> /dev/null
-
+    mkdir "$fn" 2> /dev/null
+    
     # in case of naming conflict and the folder could not be created
     if test $? -ne 0; then
-        fn=${fn}' (COPY)'
-        mkdir "$fn"
+
+	fn=$(find $1 -type d -iname "$(echo $fn | sed -E 's/^.+\/([^\/]+)$/\1/g')*" | sort -r | head -1)' (COPY)'
+echo $fn
+	mkdir "$fn"
     fi
 
     mv "$t" "$fn"
