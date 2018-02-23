@@ -19,7 +19,7 @@ while read t; do
 
     fi
 
-    mv "$t" "$fn"
+    mv "$t" "$pth/$fn"
 
 done << EOF
     $(find "$pth" -maxdepth 1 -type f)
