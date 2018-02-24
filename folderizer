@@ -1,28 +1,27 @@
 #!/bin/sh
 
-#strip trailing slash in path argument
-pth=$(echo $1 | sed -E 's/\/$//g')
+if test $# -lt 1; then exit 1; fi
 
 while read t; do
 
+    # get path
+    pth=$(echo "$t" | sed -E 's/[^\/]+$//g')
+
     # strip out path and extension
-    fn=$(echo "$t" | sed -E 's/^.+\/([^\/]+)\.[^.\/]+$/\1/g')
-
-    mkdir "$pth/$fn" 2> /dev/null
+    fn=$(echo "$t" | sed -E 's/.+\///g' | sed -E 's/\.[^\/.]+$//g')
     
-    # in case of naming conflict and the folder could not be created
-    if test $? -ne 0; then
-
-        hits=$(find "$pth" -type d -name "${fn}*")
-        fn=$(echo "$hits" | grep -E "${fn}( \(COPY\))*$" | sort -r | head -1)
-        mkdir "$pth/$fn (COPY)"
-
+    if ls -d "$pth$fn/" > /dev/null 2>&1; then
+        fp=$(find "$pth" -type d -regextype 'posix-egrep' -regex ".*$fn( \(COPY\))*$" | sort -r | head -1)
+        mkdir "$fp (COPY)"
+        mv "$t" "$fp (COPY)"
+    else
+        mkdir "$pth$fn (TEMP)"
+        mv "$t" "$pth$fn (TEMP)"
+        mv "$pth$fn (TEMP)" "$pth$fn"
     fi
 
-    mv "$t" "$pth/$fn"
-
 done << EOF
-    $(find "$pth" -maxdepth 1 -type f)
+    $(find $1 -maxdepth 1 -type f)
 EOF
 
-exit 0
+exit $?
