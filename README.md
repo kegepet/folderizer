@@ -1,5 +1,5 @@
 # folderizer
-Just a little script that puts loose files into their own automatically named folder (minus extension).
+Just a little script that puts loose files into their own automatically named folders (minus extension).
 ```
 /path/to/folderizer /path/to/targetdirectory
 ```
