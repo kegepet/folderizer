@@ -21,7 +21,7 @@ while read t; do
     fi
 
 done << EOF
-    $(find $1 -maxdepth 1 -type f)
+    $(find "$1" -maxdepth 1 -type f)
 EOF
 
 exit $?
